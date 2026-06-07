@@ -1,0 +1,750 @@
+.homepage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 20% 50%, #2d0a54 0%, #1a0533 40%, #0a0a1e 100%);
+  overflow: hidden;
+  position: relative;
+  --mx: 0px;
+  --my: 0px;
+}
+
+/* Particles */
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  bottom: -10px;
+  border-radius: 50%;
+  animation: particle-float linear infinite;
+  opacity: 0;
+}
+
+/* Orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.35) 0%, transparent 70%);
+  top: -150px;
+  right: -100px;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(245, 200, 66, 0.15) 0%, transparent 70%);
+  bottom: -100px;
+  left: 20%;
+}
+
+.orb-3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+  top: 30%;
+  left: -80px;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4rem;
+  height: 72px;
+  position: relative;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  background: rgba(26, 5, 51, 0.3);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logo-icon {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px rgba(245, 200, 66, 0.8));
+}
+
+.logo-text {
+  background: linear-gradient(135deg, #ffffff 40%, #f5c842);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logo-accent {
+  background: linear-gradient(135deg, #f5c842, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #fff;
+}
+
+.nav-cta {
+  background: linear-gradient(135deg, #f5c842, #f59e0b);
+  color: #1a0533;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.35);
+}
+
+.nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 200, 66, 0.5);
+}
+
+/* Hero */
+.hero-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 2.5rem 0 4rem;
+  gap: 2rem;
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+}
+
+/* Left */
+.hero-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  animation: fade-up 0.8s ease forwards;
+}
+
+.badge-row {
+  display: flex;
+  align-items: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(147, 51, 234, 0.2);
+  border: 1px solid rgba(147, 51, 234, 0.4);
+  color: #c084fc;
+  padding: 0.35rem 0.9rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a855f7;
+  animation: pulse-glow 2s infinite;
+  box-shadow: 0 0 8px #a855f7;
+}
+
+.hero-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 4vw, 3.6rem);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.heading-gradient {
+  background: linear-gradient(135deg, #f5c842 0%, #ec4899 50%, #9333ea 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+.feature-chips {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.cta-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #f5c842 0%, #ec4899 100%);
+  color: #fff;
+  border: none;
+  padding: 0.85rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 8px 30px rgba(245, 200, 66, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #ffe680, #f59e0b 50%, #ec4899);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(245, 200, 66, 0.5);
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
+}
+
+.btn-primary span,
+.btn-primary svg {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.85rem 1.8rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.stats-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f5c842, #ffe680);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Right - Card Scene */
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  animation: slide-in-right 0.8s 0.2s ease both;
+  overflow: visible;
+  padding-right: 5rem;
+  padding-bottom: 4rem;
+}
+
+.card-scene {
+  position: relative;
+  width: 380px;
+  height: 320px;
+  transform: translate(calc(var(--mx) * 0.3), calc(var(--my) * 0.3));
+  transition: transform 0.1s ease;
+  z-index: 1;
+}
+
+.hero-card {
+  border-radius: 18px;
+  overflow: hidden;
+  position: absolute;
+}
+
+.main-card {
+  width: 340px;
+  height: 215px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-4deg);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(245, 200, 66, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: float 5s ease-in-out infinite;
+}
+
+.main-card:hover {
+  transform: translate(-50%, -50%) rotate(0deg) scale(1.05);
+}
+
+.card-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(26, 5, 51, 0.65) 0%, rgba(45, 10, 84, 0.4) 100%);
+  backdrop-filter: blur(2px);
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-brand {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #f5c842;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.card-type {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.card-amount-display {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+.card-message {
+  font-size: 0.6rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  background: rgba(245, 200, 66, 0.1);
+  border: 1px solid rgba(245, 200, 66, 0.22);
+  border-radius: 20px;
+  padding: 0.25rem 0.65rem;
+  line-height: 1.45;
+  letter-spacing: 0.1px;
+  backdrop-filter: blur(4px);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.card-chip {
+  width: 36px;
+  height: 28px;
+  background: linear-gradient(135deg, #f5c842, #c9a227);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip-inner {
+  width: 24px;
+  height: 18px;
+  border: 1.5px solid rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  background: linear-gradient(135deg, #ffe680, #c9a227);
+}
+
+.card-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Mini Cards — shared base, positioned in hero-right */
+.mini-card {
+  position: absolute;
+  width: 148px;
+  padding: 0.55rem 0.85rem;
+  background: rgba(20, 8, 45, 0.65);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 14px;
+  opacity: 0;
+  z-index: 2;
+  animation: mini-fade-float 4s ease-in-out infinite;
+}
+
+@keyframes mini-fade-float {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translateY(-7px);
+  }
+
+  85% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Card 1 — 🎂 Birthday — top-left corner */
+.mini-card-1 {
+  top: 6%;
+  left: 24%;
+  animation-delay: 0s;
+  animation-duration: 4.5s;
+  border-color: rgba(245, 200, 66, 0.35);
+}
+
+/* Card 2 — 💍 Wedding — top-right corner */
+.mini-card-2 {
+  top: 18%;
+  right: 18%;
+  animation-delay: 1.5s;
+  animation-duration: 5s;
+  border-color: rgba(236, 72, 153, 0.35);
+}
+
+/* Card 3 — 🎉 Festival — bottom-left corner */
+.mini-card-3 {
+  bottom: -4%;
+  left: 10%;
+  animation-delay: 3s;
+  animation-duration: 4.8s;
+  border-color: rgba(147, 51, 234, 0.4);
+}
+
+/* Card 4 — 🙏 Thank You — bottom-right corner */
+.mini-card-4 {
+  bottom: 24%;
+  left: 6%;
+  animation-delay: 0.8s;
+  animation-duration: 5.2s;
+  border-color: rgba(34, 211, 238, 0.35);
+}
+
+/* Card 5 — ❤️ With Love — left edge, upper-mid */
+.mini-card-5 {
+  top: 32%;
+  left: 2%;
+  animation-delay: 2s;
+  animation-duration: 4.2s;
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+/* Card 6 — 🎓 Graduation — right edge, lower-mid */
+.mini-card-6 {
+  top: 3%;
+  right: 6%;
+  animation-delay: 3.8s;
+  animation-duration: 5.5s;
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.mini-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.mini-card-text {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Decorative rings — background of hero-right */
+.deco-ring {
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 200, 66, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin-slow 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ring 2 — large outer, purple, reverse */
+.deco-ring-2 {
+  width: 700px;
+  height: 700px;
+  border-color: rgba(147, 51, 234, 0.08);
+  animation-duration: 35s;
+  animation-direction: reverse;
+}
+
+/* Ring 3 — small, top-left scatter, pink */
+.deco-ring-3 {
+  width: 140px;
+  height: 140px;
+  border-color: rgba(236, 72, 153, 0.3);
+  border-width: 1.5px;
+  top: 12%;
+  left: 10%;
+  transform: none;
+  animation-duration: 12s;
+}
+
+/* Ring 4 — medium, bottom-right, gold */
+.deco-ring-4 {
+  width: 200px;
+  height: 200px;
+  border-color: rgba(245, 200, 66, 0.2);
+  top: 65%;
+  left: 70%;
+  transform: none;
+  animation-duration: 18s;
+  animation-direction: reverse;
+}
+
+/* Ring 5 — tiny, top-right corner, cyan */
+.deco-ring-5 {
+  width: 80px;
+  height: 80px;
+  border-color: rgba(34, 211, 238, 0.35);
+  border-width: 1.5px;
+  top: 8%;
+  left: 72%;
+  transform: none;
+  animation-duration: 8s;
+}
+
+/* Ring 6 — medium, bottom-left, purple */
+.deco-ring-6 {
+  width: 160px;
+  height: 160px;
+  border-color: rgba(168, 85, 247, 0.25);
+  top: 72%;
+  left: 5%;
+  transform: none;
+  animation-duration: 15s;
+  animation-direction: reverse;
+}
+
+/* Ring 7 — small, mid-right, pink */
+.deco-ring-7 {
+  width: 100px;
+  height: 100px;
+  border-color: rgba(236, 72, 153, 0.2);
+  top: 38%;
+  left: 80%;
+  transform: none;
+  animation-duration: 10s;
+}
+
+/* Ring 8 — large-ish, off-center bottom, gold */
+.deco-ring-8 {
+  width: 300px;
+  height: 300px;
+  border-color: rgba(245, 200, 66, 0.1);
+  border-style: dashed;
+  top: 58%;
+  left: 20%;
+  transform: none;
+  animation-duration: 25s;
+  animation-direction: reverse;
+}
+
+/* Ring 9 — tiny, upper-mid, purple */
+.deco-ring-9 {
+  width: 60px;
+  height: 50px;
+  border-color: rgba(147, 51, 234, 0.4);
+  border-width: 2px;
+  top: 22%;
+  left: 55%;
+  transform: none;
+  animation-duration: 6s;
+}
+
+/* Brand Strip */
+.brand-strip {
+  height: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+}
+
+.strip-inner {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  white-space: nowrap;
+  animation: strip-scroll 20s linear infinite;
+}
+
+@keyframes strip-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.brand-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
