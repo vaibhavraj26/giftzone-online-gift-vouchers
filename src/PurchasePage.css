@@ -127,10 +127,9 @@
 
 /* Form Panel */
 .form-panel {
-  flex: 1.1;
+  flex-shrink: 0;
   padding: 1.5rem 2.5rem;
   overflow-y: auto;
-  border-right: 1px solid rgba(255,255,255,0.06);
 }
 
 .form-header {
@@ -478,14 +477,71 @@
 
 /* Preview Panel */
 .preview-panel {
-  width: 380px;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 380px; /* Prevent squeezing smaller than its initial width */
   padding: 1.5rem 1.8rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   overflow-y: auto;
   background: rgba(255,255,255,0.02);
+}
+
+.preview-content {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Drag Resizing Layout */
+.layout-dragging {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: col-resize;
+}
+
+.resize-divider {
+  width: 12px;
+  cursor: col-resize;
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.2s, border-color 0.2s;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
+}
+
+.resize-divider::after {
+  content: '';
+  width: 2px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  transition: background 0.2s, height 0.2s, box-shadow 0.2s;
+}
+
+.resize-divider:hover {
+  background: rgba(147, 51, 234, 0.1);
+  border-left-color: rgba(147, 51, 234, 0.4);
+}
+
+.resize-divider:hover::after,
+.resize-divider.dragging::after {
+  background: #f5c842;
+  height: 36px;
+  box-shadow: 0 0 8px rgba(245, 200, 66, 0.6);
+}
+
+.resize-divider.dragging {
+  background: rgba(147, 51, 234, 0.2);
+  border-left-color: rgba(147, 51, 234, 0.6);
 }
 
 .preview-header {
@@ -518,12 +574,13 @@
 
 .preview-card {
   width: 100%;
-  height: 195px;
+  aspect-ratio: 1.65;
   border-radius: 18px;
   overflow: hidden;
   position: relative;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   transition: all 0.4s;
+  container-type: inline-size;
 }
 
 .preview-card:hover {
@@ -563,7 +620,7 @@
 .preview-overlay {
   position: absolute;
   inset: 0;
-  padding: 1.1rem 1.3rem;
+  padding: 5.5cqw 6.5cqw;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -579,17 +636,17 @@
 
 .preview-brand {
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 4.8cqw;
   color: #f5c842;
 }
 
 .preview-badge {
-  font-size: 0.6rem;
+  font-size: 3cqw;
   font-weight: 700;
   letter-spacing: 2px;
   color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.3);
-  padding: 0.15rem 0.4rem;
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 0.8cqw 2cqw;
   border-radius: 3px;
 }
 
@@ -599,7 +656,7 @@
 
 .preview-amount {
   font-family: var(--font-heading);
-  font-size: 2.5rem;
+  font-size: 12.5cqw;
   font-weight: 700;
   color: #fff;
   text-shadow: 0 4px 20px rgba(0,0,0,0.8);
@@ -613,25 +670,25 @@
 }
 
 .preview-label {
-  font-size: 0.6rem;
+  font-size: 3cqw;
   color: rgba(255,255,255,0.5);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .preview-name {
-  font-size: 0.9rem;
+  font-size: 4.5cqw;
   font-weight: 700;
   color: #fff;
-  max-width: 100px;
+  max-width: 32cqw;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .preview-chip {
-  width: 32px;
-  height: 24px;
+  width: 10cqw;
+  height: 7.5cqw;
   background: linear-gradient(135deg, #f5c842, #c9a227);
   border-radius: 4px;
   display: flex;
@@ -640,8 +697,8 @@
 }
 
 .preview-chip-inner {
-  width: 22px;
-  height: 16px;
+  width: 7cqw;
+  height: 5cqw;
   border: 1.5px solid rgba(0,0,0,0.3);
   border-radius: 2px;
   background: linear-gradient(135deg, #ffe680, #c9a227);
@@ -838,14 +895,14 @@
 }
 
 .card-message {
-  font-size: 0.7rem;
+  font-size: 3.5cqw;
   font-style: italic;
   color: rgba(255, 255, 255, 0.85);
   text-align: center;
   background: rgba(245, 200, 66, 0.1);
   border: 1px solid rgba(245, 200, 66, 0.22);
   border-radius: 20px;
-  padding: 0.25rem 0.65rem;
+  padding: 1.2cqw 3cqw;
   line-height: 1.45;
   letter-spacing: 0.1px;
   backdrop-filter: blur(4px);

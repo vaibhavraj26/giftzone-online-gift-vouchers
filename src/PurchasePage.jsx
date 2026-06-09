@@ -16,6 +16,16 @@ const OCCASION_MESSAGES = {
   custom: "",
 };
 
+// Pure helper to generate pseudo-random values for confetti delay and positions to satisfy eslint purity checks
+const getConfettiStyle = (i) => {
+  const left = (Math.sin((i + 1) * 75.3) * 0.5 + 0.5) * 100;
+  const delay = (Math.sin((i + 1) * 33.7) * 0.5 + 0.5) * 2;
+  return {
+    left: `${left}%`,
+    animationDelay: `${delay}s`,
+  };
+};
+
 export default function PurchasePage({ onBack }) {
   const [denomination, setDenomination] = useState(1000);
   const [customAmount, setCustomAmount] = useState('');
@@ -23,13 +33,18 @@ export default function PurchasePage({ onBack }) {
   const [recipientName, setRecipientName] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [senderName, setSenderName] = useState('');
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(OCCASION_MESSAGES.birthday);
   const [occasion, setOccasion] = useState('birthday');
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
   const [cardFlipping, setCardFlipping] = useState(false);
   const prevDenom = useRef(denomination);
   const customInputRef = useRef(null);
+
+  // Resize states
+  const [leftWidth, setLeftWidth] = useState(68);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
 
   // When denomination changes, animate the card
   useEffect(() => {
@@ -49,12 +64,54 @@ export default function PurchasePage({ onBack }) {
     }
   }, [isCustom]);
 
-  // Auto-fill message on occasion change
-  useEffect(() => {
-    if (occasion !== 'custom') {
-      setMessage(OCCASION_MESSAGES[occasion]);
+  // Handle occasion change and update message state without synchronous useEffect rendering
+  const handleOccasionChange = (occ) => {
+    setOccasion(occ);
+    if (occ !== 'custom') {
+      setMessage(OCCASION_MESSAGES[occ]);
     }
-  }, [occasion]);
+  };
+
+  // Pointer/mouse resize handler for adjustable split layout
+  const handlePointerDown = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handlePointerMove = (e) => {
+      if (!containerRef.current) return;
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width;
+      if (containerWidth === 0) return;
+
+      const relativeX = e.clientX - containerRect.left;
+      let newPercent = (relativeX / containerWidth) * 100;
+
+      // Constrain right layout width to a minimum of 380px (its initial width)
+      // 380px + 12px (divider) = 392px. Remaining percentage for left layout:
+      const maxPercent = ((containerWidth - 392) / containerWidth) * 100;
+      const safeMaxPercent = Math.max(50, maxPercent);
+
+      // Constrain between 50% (50-50 split) and the calculated max percent
+      newPercent = Math.max(50, Math.min(newPercent, safeMaxPercent));
+      setLeftWidth(newPercent);
+    };
+
+    const handlePointerUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [isDragging]);
 
   // Effective amount shown everywhere
   const effectiveAmount = isCustom ? (parseInt(customAmount) || 0) : denomination;
@@ -93,7 +150,7 @@ export default function PurchasePage({ onBack }) {
     setRecipientName('');
     setRecipientEmail('');
     setSenderName('');
-    setMessage('');
+    setMessage(OCCASION_MESSAGES.birthday);
     setDenomination(1000);
     setCustomAmount('');
     setIsCustom(false);
@@ -109,13 +166,16 @@ export default function PurchasePage({ onBack }) {
         </div>
         <div className="success-card">
           <div className="success-confetti">
-            {Array.from({length: 20}).map((_, i) => (
-              <span key={i} className="confetti-piece" style={{
-                left: `${Math.random()*100}%`,
-                animationDelay: `${Math.random()*2}s`,
-                background: ['#f5c842','#ec4899','#9333ea','#22d3ee'][i%4],
-              }} />
-            ))}
+            {Array.from({length: 20}).map((_, i) => {
+              const confettiStyle = getConfettiStyle(i);
+              return (
+                <span key={i} className="confetti-piece" style={{
+                  left: confettiStyle.left,
+                  animationDelay: confettiStyle.animationDelay,
+                  background: ['#f5c842','#ec4899','#9333ea','#22d3ee'][i%4],
+                }} />
+              );
+            })}
           </div>
           <div className="success-icon">🎁</div>
           <h2 className="success-title">Gift Card Sent!</h2>
@@ -188,10 +248,10 @@ export default function PurchasePage({ onBack }) {
       </div>
 
       {/* Main Layout */}
-      <div className="purchase-layout">
+      <div className={`purchase-layout ${isDragging ? 'layout-dragging' : ''}`} ref={containerRef}>
 
         {/* LEFT — Form */}
-        <div className="form-panel">
+        <div className="form-panel" style={{ width: `${leftWidth}%` }}>
           <div className="form-header">
             <h1 className="form-title">Send a Gift Card</h1>
             <p className="form-subtitle">Fill in the details and we'll deliver it instantly</p>
@@ -321,7 +381,7 @@ export default function PurchasePage({ onBack }) {
                     key={occ}
                     type="button"
                     className={`occ-pill ${occasion === occ ? 'occ-pill--active' : ''}`}
-                    onClick={() => setOccasion(occ)}
+                    onClick={() => handleOccasionChange(occ)}
                   >
                     {occ === 'birthday' ? '🎂 Birthday' :
                      occ === 'wedding' ? '💍 Wedding' :
@@ -354,80 +414,88 @@ export default function PurchasePage({ onBack }) {
           </form>
         </div>
 
+        {/* Divider Handle */}
+        <div 
+          className={`resize-divider ${isDragging ? 'dragging' : ''}`} 
+          onPointerDown={handlePointerDown}
+        />
+
         {/* RIGHT — Preview */}
         <div className="preview-panel">
           <div className="preview-header">
             <span className="preview-label-tag">Live Preview</span>
           </div>
 
-          <div className={`preview-card-wrapper ${cardFlipping ? 'card-flip-anim' : ''}`}>
-            <div className={`preview-card preview-card--${selectedDenom.theme}`}>
-              <img src="/giftcard_bg.png" alt="Gift Card" className="preview-bg" />
-              <div className="preview-shimmer" />
-              <div className="preview-overlay">
-                <div className="preview-top">
-                  <span className="preview-brand">🎁 GiftZone</span>
-                  <span className="preview-badge">GIFT CARD</span>
-                </div>
-                <div className="preview-center">
-                  <div className="preview-amount">₹{effectiveAmount > 0 ? effectiveAmount.toLocaleString() : '—'}</div>
-                </div>
-                {message && (
-                  <div className="card-message">
-                    {message}
+          <div className="preview-content">
+            <div className={`preview-card-wrapper ${cardFlipping ? 'card-flip-anim' : ''}`}>
+              <div className={`preview-card preview-card--${selectedDenom.theme}`}>
+                <img src="/giftcard_bg.png" alt="Gift Card" className="preview-bg" />
+                <div className="preview-shimmer" />
+                <div className="preview-overlay">
+                  <div className="preview-top">
+                    <span className="preview-brand">🎁 GiftZone</span>
+                    <span className="preview-badge">GIFT CARD</span>
                   </div>
-                )}
-                <div className="preview-bottom">
-                  <div>
-                    <div className="preview-label">For</div>
-                    <div className="preview-name">{recipientName || 'Your Friend'}</div>
+                  <div className="preview-center">
+                    <div className="preview-amount">₹{effectiveAmount > 0 ? effectiveAmount.toLocaleString() : '—'}</div>
                   </div>
-                  <div>
-                    <div className="preview-label">From</div>
-                    <div className="preview-name">{senderName || 'You'}</div>
-                  </div>
-                  <div className="preview-chip">
-                    <div className="preview-chip-inner" />
+                  {message && (
+                    <div className="card-message">
+                      {message}
+                    </div>
+                  )}
+                  <div className="preview-bottom">
+                    <div>
+                      <div className="preview-label">For</div>
+                      <div className="preview-name">{recipientName || 'Your Friend'}</div>
+                    </div>
+                    <div>
+                      <div className="preview-label">From</div>
+                      <div className="preview-name">{senderName || 'You'}</div>
+                    </div>
+                    <div className="preview-chip">
+                      <div className="preview-chip-inner" />
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Glow based on theme */}
+              <div className={`card-glow card-glow--${selectedDenom.theme}`} />
             </div>
 
-            {/* Glow based on theme */}
-            <div className={`card-glow card-glow--${selectedDenom.theme}`} />
-          </div>
+            {/* Message Preview */}
+            {message && (
+              <div className="message-preview">
+                <div className="msg-quote">"</div>
+                <p className="msg-text">{message}</p>
+              </div>
+            )}
 
-          {/* Message Preview */}
-          {message && (
-            <div className="message-preview">
-              <div className="msg-quote">"</div>
-              <p className="msg-text">{message}</p>
+            {/* Summary */}
+            <div className="order-summary">
+              <div className="summary-row">
+                <span>Gift Value</span>
+                <span className="summary-value">₹{effectiveAmount > 0 ? effectiveAmount.toLocaleString() : '—'}</span>
+              </div>
+              <div className="summary-row">
+                <span>Delivery Charges</span>
+                <span className="summary-free">FREE</span>
+              </div>
+              <div className="summary-divider" />
+              <div className="summary-row summary-total">
+                <span>Total</span>
+                <span>₹{effectiveAmount > 0 ? effectiveAmount.toLocaleString() : '—'}</span>
+              </div>
             </div>
-          )}
 
-          {/* Summary */}
-          <div className="order-summary">
-            <div className="summary-row">
-              <span>Gift Value</span>
-              <span className="summary-value">₹{effectiveAmount > 0 ? effectiveAmount.toLocaleString() : '—'}</span>
+            <div className="preview-trust">
+              <span>🔒 Secured by 256-bit SSL</span>
+              <span>•</span>
+              <span>⚡ Instant Delivery</span>
+              <span>•</span>
+              <span>🔄 Easy Refund</span>
             </div>
-            <div className="summary-row">
-              <span>Delivery Charges</span>
-              <span className="summary-free">FREE</span>
-            </div>
-            <div className="summary-divider" />
-            <div className="summary-row summary-total">
-              <span>Total</span>
-              <span>₹{effectiveAmount > 0 ? effectiveAmount.toLocaleString() : '—'}</span>
-            </div>
-          </div>
-
-          <div className="preview-trust">
-            <span>🔒 Secured by 256-bit SSL</span>
-            <span>•</span>
-            <span>⚡ Instant Delivery</span>
-            <span>•</span>
-            <span>🔄 Easy Refund</span>
           </div>
         </div>
       </div>
