@@ -25,9 +25,11 @@ GiftZone is a modern React web application built with a focus on **visual excell
 * **Preset Cards**: Choose quickly between standard card denominations: **Silver (₹500)**, **Gold (₹1,000)**, and **Platinum (₹2,000)**.
 * **Custom Amount Card**: A dedicated "Custom" option that reveals an inline input field. It features real-time validation restricting values between **₹100** and **₹50,000**.
 
-### 3. Real-Time Live Preview
+### 3. Real-Time Live Preview & Adjustable Split Layout
 * As users enter recipient names, sender names, custom prices, and personal messages, the **Live Preview Card** updates instantly.
 * The preview card matches the selected card theme (Silver, Gold, Platinum, or Custom Cyan) with corresponding borders and ambient glow.
+* **Adjustable Width & Drag Handle**: Users can adjust the width by dragging a vertical glassmorphic divider between the panels. The split can range from the default ratio up to a **50-50 split** (with the right panel constrained to a minimum of **380px** so details are never squeezed).
+* **Proportional Scaling (Container Queries)**: The live preview card and its inner content (amount, message, chip, names, labels) scale proportionally using CSS Container Queries (`cqw` units), maintaining a high-fidelity aspect ratio and crisp alignment at all panel widths.
 
 ### 4. Smart Occasions & Character Count
 * Quick-select pills automatically fill standard greetings for **Birthday**, **Wedding**, **Festival**, and **Thank You** occasions.
@@ -64,6 +66,7 @@ Handles the initial landing experience:
 ### 3. `PurchasePage.jsx`
 Manages the form input flow, live card preview, and the success screen:
 * State management for form fields, validations, and card flip animations.
+* PointerEvents handlers tracking resizable layout dragging and boundary constraints.
 * Success screen rendering complete with confetti animations.
 
 ### 4. `index.css`, `HomePage.css`, `PurchasePage.css`
