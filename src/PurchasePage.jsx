@@ -26,6 +26,196 @@ const getConfettiStyle = (i) => {
   };
 };
 
+// Wrap text helper for drawing on canvas
+const getCanvasTextLines = (ctx, text, maxWidth) => {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = words[0] || "";
+
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const width = ctx.measureText(currentLine + " " + word).width;
+    if (width < maxWidth) {
+      currentLine += " " + word;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  lines.push(currentLine);
+  return lines.filter(Boolean);
+};
+
+// Object-fit: cover drawing implementation for canvas to prevent background image squeezing
+const drawImageCover = (ctx, img, x, y, w, h) => {
+  const imgRatio = img.width / img.height;
+  const canvasRatio = w / h;
+  let sx, sy, sWidth, sHeight;
+
+  if (imgRatio > canvasRatio) {
+    sHeight = img.height;
+    sWidth = img.height * canvasRatio;
+    sx = (img.width - sWidth) / 2;
+    sy = 0;
+  } else {
+    sWidth = img.width;
+    sHeight = img.width / canvasRatio;
+    sx = 0;
+    sy = (img.height - sHeight) / 2;
+  }
+
+  ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, w, h);
+};
+
+// Generate high-resolution customized gift card image blob client-side
+const generateCardBlob = (effectiveAmount, recipientName, senderName, message) => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 680;
+    canvas.height = 412;
+    const ctx = canvas.getContext('2d');
+
+    const img = new Image();
+    img.src = '/giftcard_bg.png';
+    img.onload = () => {
+      // 1. Draw card background image using Cover scaling (object-fit: cover)
+      drawImageCover(ctx, img, 0, 0, canvas.width, canvas.height);
+
+      // 2. Draw card overlay gradient
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, 'rgba(26, 5, 51, 0.75)');
+      grad.addColorStop(1, 'rgba(45, 10, 84, 0.5)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Setup dynamic padding based on whether there's a message
+      const hasMsg = !!message;
+      const padX = hasMsg ? 34 : 44;
+      const padY = hasMsg ? 27 : 38;
+
+      // 3. Draw Brand name
+      ctx.fillStyle = '#f5c842';
+      ctx.font = '800 32px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText('🎁 GiftZone', padX, padY + 28);
+
+      // 4. Draw Badge box and text
+      ctx.font = 'bold 18px system-ui, -apple-system, sans-serif';
+      const badgeText = 'GIFT CARD';
+      const badgeTextW = ctx.measureText(badgeText).width;
+      const badgeW = badgeTextW + 28;
+      const badgeH = 34;
+      const badgeX = canvas.width - padX - badgeW;
+      const badgeY = padY;
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 4);
+      else ctx.rect(badgeX, badgeY, badgeW, badgeH);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.textAlign = 'center';
+      ctx.fillText(badgeText, badgeX + badgeW / 2, badgeY + badgeH / 2 + 6);
+
+      // 5. Draw Rupee Amount (Centered and styled)
+      ctx.fillStyle = '#ffffff';
+      const amountFont = hasMsg ? 'bold 65px system-ui, -apple-system, sans-serif' : 'bold 85px system-ui, -apple-system, sans-serif';
+      ctx.font = amountFont;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+      ctx.shadowBlur = 15;
+      const amountY = hasMsg ? 155 : 225;
+      ctx.fillText(`₹${effectiveAmount.toLocaleString()}`, canvas.width / 2, amountY);
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+
+      // 6. Draw custom greeting message inside capsule pill
+      if (hasMsg) {
+        ctx.font = 'italic 19px system-ui, -apple-system, sans-serif';
+        const capsuleW = canvas.width - padX * 2;
+        const maxTextW = capsuleW - 34; // 17px padding on left/right
+        const lines = getCanvasTextLines(ctx, message, maxTextW);
+        const lineHeight = 26;
+        const paddingY = 8;
+        const capsuleH = lines.length * lineHeight + paddingY * 2;
+        const capsuleX = padX;
+        const capsuleY = 185;
+
+        // Draw capsule background & border
+        ctx.fillStyle = 'rgba(245, 200, 66, 0.1)';
+        ctx.strokeStyle = 'rgba(245, 200, 66, 0.22)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(capsuleX, capsuleY, capsuleW, capsuleH, 20);
+        else ctx.rect(capsuleX, capsuleY, capsuleW, capsuleH);
+        ctx.fill();
+        ctx.stroke();
+
+        // Draw wrapped lines inside capsule
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.textAlign = 'center';
+        lines.forEach((line, idx) => {
+          ctx.fillText(line, canvas.width / 2, capsuleY + paddingY + (idx + 1) * lineHeight - 6);
+        });
+      }
+
+      // 7. Draw Bottom details (FOR/FROM name metadata)
+      ctx.textAlign = 'left';
+      const bottomY = canvas.height - padY;
+      
+      // "FOR"
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = 'bold 20px system-ui, -apple-system, sans-serif';
+      ctx.fillText('FOR', padX, bottomY - 42);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 31px system-ui, -apple-system, sans-serif';
+      ctx.fillText(recipientName || 'Your Friend', padX, bottomY - 5);
+
+      // "FROM"
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = 'bold 20px system-ui, -apple-system, sans-serif';
+      ctx.fillText('FROM', padX + 220, bottomY - 42);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 31px system-ui, -apple-system, sans-serif';
+      ctx.fillText(senderName || 'You', padX + 220, bottomY - 5);
+
+      // 8. Draw gold microchip
+      const chipW = 68;
+      const chipH = 51;
+      const chipX = canvas.width - padX - chipW;
+      const chipY = canvas.height - padY - chipH - 3; // slight offset to align nicely
+
+      const chipGrad = ctx.createLinearGradient(chipX, chipY, chipX + chipW, chipY + chipH);
+      chipGrad.addColorStop(0, '#f5c842');
+      chipGrad.addColorStop(1, '#c9a227');
+      ctx.fillStyle = chipGrad;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(chipX, chipY, chipW, chipH, 6);
+      else ctx.rect(chipX, chipY, chipW, chipH);
+      ctx.fill();
+
+      // Chip borders
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(chipX + 6, chipY + 6, chipW - 12, chipH - 12, 4);
+      else ctx.rect(chipX + 6, chipY + 6, chipW - 12, chipH - 12);
+      ctx.stroke();
+
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Failed to generate canvas blob'));
+      }, 'image/png');
+    };
+    img.onerror = () => reject(new Error('Failed to load card background image'));
+  });
+};
+
 export default function PurchasePage({ onBack }) {
   const [denomination, setDenomination] = useState(1000);
   const [customAmount, setCustomAmount] = useState('');
@@ -45,6 +235,7 @@ export default function PurchasePage({ onBack }) {
   const [leftWidth, setLeftWidth] = useState(68);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
+  const [shared, setShared] = useState(false);
 
   // When denomination changes, animate the card
   useEffect(() => {
@@ -131,6 +322,7 @@ export default function PurchasePage({ onBack }) {
     if (!recipientEmail.trim() || !/\S+@\S+\.\S+/.test(recipientEmail)) e.recipientEmail = 'Valid email required';
     if (!senderName.trim()) e.senderName = 'Your name is required';
     if (!message.trim()) e.message = 'Please add a personal message';
+    else if (message.length > 200) e.message = 'Message cannot exceed 200 characters';
     return e;
   };
 
@@ -155,6 +347,57 @@ export default function PurchasePage({ onBack }) {
     setCustomAmount('');
     setIsCustom(false);
     setOccasion('birthday');
+  };
+
+  const handleShare = async () => {
+    const shareText = `🎁 GiftZone Gift Card 🎁\n\n` +
+      `Hey! I've sent a ₹${effectiveAmount.toLocaleString()} Gift Card to ${recipientName} at ${recipientEmail}!\n\n` +
+      `Occasion: ${occasion.toUpperCase()}\n` +
+      `Message: "${message}"\n\n` +
+      `Delivered instantly via GiftZone.`+
+      `https://giftzone-online-gift.vercel.app/giftcard/`
+    ;
+
+    try {
+      const blob = await generateCardBlob(effectiveAmount, recipientName, senderName, message);
+      const file = new File([blob], 'giftcard.png', { type: 'image/png' });
+      
+      const shareData = {
+        title: 'GiftZone Gift Card',
+        text: shareText,
+        files: [file],
+      };
+
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      // Fallback: Copy the actual image AND formatted text directly to clipboard
+      if (navigator.clipboard && window.ClipboardItem) {
+        const item = new ClipboardItem({
+          'image/png': blob,
+          'text/plain': new Blob([shareText], { type: 'text/plain' })
+        });
+        await navigator.clipboard.write([item]);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+        return;
+      }
+    } catch (err) {
+      console.log('Error preparing card image for sharing or writing to clipboard:', err);
+    }
+
+    // Fallback to text copy with public template link
+    const fallbackText = `${shareText}\n\nCard Image: ${window.location.origin}/giftcard_bg.png`;
+    navigator.clipboard.writeText(fallbackText)
+      .then(() => {
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
   };
 
   if (submitted) {
@@ -184,7 +427,7 @@ export default function PurchasePage({ onBack }) {
           </p>
 
           {/* Mini Preview */}
-          <div className={`preview-card preview-card--${selectedDenom.theme} success-preview`}>
+          <div className={`preview-card preview-card--${selectedDenom.theme} success-preview ${message ? 'preview-card--has-message' : ''}`}>
             <img src="/giftcard_bg.png" alt="card" className="preview-bg" />
             <div className="preview-overlay">
               <div className="preview-top">
@@ -215,7 +458,15 @@ export default function PurchasePage({ onBack }) {
           <div className="success-actions">
             <button className="btn-gold" onClick={handleReset}>Send Another Gift</button>
             <button className="btn-outline-white" onClick={onBack}>Back to Home</button>
+            <button className="btn-share" onClick={handleShare} title="Share Receipt">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                <polyline points="16 6 12 2 8 6" />
+                <line x1="12" y1="2" x2="12" y2="15" />
+              </svg>
+            </button>
           </div>
+          {shared && <div className="share-toast">Copied to Clipboard!</div>}
         </div>
       </div>
     );
@@ -331,7 +582,8 @@ export default function PurchasePage({ onBack }) {
                     <input
                       id="recipientName"
                       type="text"
-                      placeholder="e.g. Priya Sharma"
+
+                      placeholder="e.g. Aarav Patel"
                       value={recipientName}
                       onChange={e => setRecipientName(e.target.value)}
                     />
@@ -345,7 +597,7 @@ export default function PurchasePage({ onBack }) {
                     <input
                       id="recipientEmail"
                       type="email"
-                      placeholder="priya@example.com"
+                      placeholder="aarav@example.com"
                       value={recipientEmail}
                       onChange={e => setRecipientEmail(e.target.value)}
                     />
@@ -398,6 +650,7 @@ export default function PurchasePage({ onBack }) {
                     placeholder="Write your heartfelt message here..."
                     value={message}
                     onChange={e => { setMessage(e.target.value); setOccasion('custom'); }}
+                    maxLength={200}
                   />
                 </div>
                 <div className="char-count">{message.length}/200</div>
@@ -428,7 +681,7 @@ export default function PurchasePage({ onBack }) {
 
           <div className="preview-content">
             <div className={`preview-card-wrapper ${cardFlipping ? 'card-flip-anim' : ''}`}>
-              <div className={`preview-card preview-card--${selectedDenom.theme}`}>
+              <div className={`preview-card preview-card--${selectedDenom.theme} ${message ? 'preview-card--has-message' : ''}`}>
                 <img src="/giftcard_bg.png" alt="Gift Card" className="preview-bg" />
                 <div className="preview-shimmer" />
                 <div className="preview-overlay">
