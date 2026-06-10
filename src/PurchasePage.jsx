@@ -354,7 +354,7 @@ export default function PurchasePage({ onBack }) {
       `Hey! I've sent a ₹${effectiveAmount.toLocaleString()} Gift Card to ${recipientName} at ${recipientEmail}!\n\n` +
       `Occasion: ${occasion.toUpperCase()}\n` +
       `Message: "${message}"\n\n` +
-      `Delivered instantly via GiftZone.`+
+      `Delivered instantly via GiftZone.\n`+
       `https://giftzone-online-gift.vercel.app/giftcard/`
     ;
 
