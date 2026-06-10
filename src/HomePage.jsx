@@ -153,7 +153,7 @@ export default function HomePage({ onGetStarted }) {
                 <div className="card-bottom-row">
                   <div>
                     <div className="card-label">For</div>
-                    <div className="card-name">Priya Sharma</div>
+                    <div className="card-name">Aarav Patel</div>
                   </div>
                   <div className="card-chip">
                     <div className="chip-inner" />
