@@ -89,7 +89,8 @@ const generateCardBlob = (effectiveAmount, recipientName, senderName, message) =
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Setup dynamic padding based on whether there's a message
-      const hasMsg = !!message;
+      const truncatedMessage = message ? message.slice(0, 200) : '';
+      const hasMsg = !!truncatedMessage;
       const padX = hasMsg ? 34 : 44;
       const padY = hasMsg ? 27 : 38;
 
@@ -137,7 +138,7 @@ const generateCardBlob = (effectiveAmount, recipientName, senderName, message) =
         ctx.font = 'italic 19px system-ui, -apple-system, sans-serif';
         const capsuleW = canvas.width - padX * 2;
         const maxTextW = capsuleW - 34; // 17px padding on left/right
-        const lines = getCanvasTextLines(ctx, message, maxTextW);
+        const lines = getCanvasTextLines(ctx, truncatedMessage, maxTextW);
         const lineHeight = 26;
         const paddingY = 8;
         const capsuleH = lines.length * lineHeight + paddingY * 2;
@@ -444,7 +445,7 @@ export default function PurchasePage({ onBack }) {
               </div>
               {message && (
                 <div className="card-message">
-                  {message}
+                  {message.slice(0, 200)}
                 </div>
               )}
               <div className="preview-bottom">
@@ -716,7 +717,7 @@ export default function PurchasePage({ onBack }) {
                   </div>
                   {message && (
                     <div className="card-message">
-                      {message}
+                      {message.slice(0, 200)}
                     </div>
                   )}
                   <div className="preview-bottom">
@@ -743,7 +744,7 @@ export default function PurchasePage({ onBack }) {
             {message && (
               <div className="message-preview">
                 <div className="msg-quote">"</div>
-                <p className="msg-text">{message}</p>
+                <p className="msg-text">{message.slice(0, 200)}</p>
               </div>
             )}
 
