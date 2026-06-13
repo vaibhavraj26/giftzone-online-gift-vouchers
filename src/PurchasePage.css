@@ -406,12 +406,25 @@
   font-weight: 500;
 }
 
-.char-count {
-  text-align: right;
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.3);
-  margin-top: 2px;
+.msg-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
 }
+
+.char-count {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-left: auto;
+}
+
+.char-count--error {
+  color: #f87171 !important;
+  font-weight: 600;
+}
+
+
 
 /* Occasion Pills */
 .occasion-pills {

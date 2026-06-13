@@ -260,6 +260,11 @@ export default function PurchasePage({ onBack }) {
     setOccasion(occ);
     if (occ !== 'custom') {
       setMessage(OCCASION_MESSAGES[occ]);
+      setErrors(prev => {
+        const copy = { ...prev };
+        delete copy.message;
+        return copy;
+      });
     }
   };
 
@@ -649,13 +654,30 @@ export default function PurchasePage({ onBack }) {
                     rows="3"
                     placeholder="Write your heartfelt message here..."
                     value={message}
-                    onChange={e => { setMessage(e.target.value); setOccasion('custom'); }}
-                    maxLength={200}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setMessage(val);
+                      setOccasion('custom');
+                      if (val.length > 200) {
+                        setErrors(prev => ({ ...prev, message: 'Message cannot exceed 200 characters' }));
+                      } else {
+                        setErrors(prev => {
+                          const copy = { ...prev };
+                          delete copy.message;
+                          return copy;
+                        });
+                      }
+                    }}
                   />
                 </div>
-                <div className="char-count">{message.length}/200</div>
-                {errors.message && <span className="error-msg">{errors.message}</span>}
+                <div className="msg-meta-row">
+                  {errors.message && <span className="error-msg">{errors.message}</span>}
+                  <div className={`char-count ${message.length > 200 ? 'char-count--error' : ''}`}>
+                    {message.length}/200
+                  </div>
+                </div>
               </div>
+
             </div>
 
             <button type="submit" className="send-btn" id="send-gift-card-btn">
